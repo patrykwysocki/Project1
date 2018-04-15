@@ -33,7 +33,7 @@ GLenum	error;		// OpenGL Error Code
 
 
 					//Please see .//Assets//Textures// for more textures
-const string filename = ".//Assets//Textures//grid_wip.tga";
+const string filename = ".//Assets//Textures//cube.pdn";
 
 int width;						// Width of texture
 int height;						// Height of texture
@@ -170,6 +170,8 @@ void Game::initialize()
 	// Vertices (3) x,y,z , Colors (4) RGBA, UV/ST (2)
 	//glBufferData(GL_ARRAY_BUFFER, ((3 * VERTICES) + (4 * COLORS) + (2 * UVS)) * sizeof(GLfloat), NULL, GL_STATIC_DRAW);
 	glBufferData(GL_ARRAY_BUFFER, ((3 * VERTICES_NPC) + (4 * COLORS_NPC) + (2 * UVS_NPC)) * sizeof(GLfloat), NULL, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, ((3 * VERTICES_NPC) + (4 * COLORS_NPC) + (2 * UVS_NPC)) * sizeof(GLfloat), NULL, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, ((3 * VERTICES_NPC) + (4 * COLORS_NPC) + (2 * UVS_NPC)) * sizeof(GLfloat), NULL, GL_STATIC_DRAW);
 	glBufferData(GL_ARRAY_BUFFER, ((3 * VERTICES_PLAYER) + (4 * COLORS_PLAYER) + (2 * UVS_PLAYER)) * sizeof(GLfloat), NULL, GL_STATIC_DRAW);
 
 	glGenBuffers(1, &vib); //Generate Vertex Index Buffer
@@ -177,6 +179,8 @@ void Game::initialize()
 
 	// Indices to be drawn
 	//glBufferData(GL_ELEMENT_ARRAY_BUFFER, 3 * INDICES * sizeof(GLuint), indices, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 3 * VERTICES_NPC * sizeof(GLuint), Indices, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 3 * VERTICES_NPC * sizeof(GLuint), Indices, GL_STATIC_DRAW);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 3 * VERTICES_NPC * sizeof(GLuint), Indices, GL_STATIC_DRAW);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 3 * INDICES_PLAYER * sizeof(GLuint), indicesPlayer, GL_STATIC_DRAW);
 
@@ -372,11 +376,28 @@ void Game::update()
 		modelPlayer = translate(modelPlayer, glm::vec3(-0.005, 0, 0)); // Rotate
 
 	}
-	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
 	{
 		modelPlayer = translate(modelPlayer, glm::vec3(0.005, 0, 0)); // Rotate
 
 	}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
+	{
+		//m_cubeFired = true;
+		shootCube();
+	}
+	//if (m_cubeFired)
+	//{
+	//	modelPlayer = translate(modelPlayer, glm::vec3(0.0, 0.10, -0.3));
+	//	m_cubeFired = false;
+	//}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::R))
+	{
+		modelPlayer = mat4{
+			1.0 };
+		modelPlayer = translate(modelPlayer, glm::vec3(0.0f, -1.0f, 4.0f));
+	}
+	
 
 
 	//model = rotate(model, -0.001f, glm::vec3(0, -1, 0)); // Rotate
@@ -572,5 +593,20 @@ void Game::unload()
 	glDeleteBuffers(1, &vbo);		// Delete Vertex Buffer
 	glDeleteBuffers(1, &vib);		// Delete Vertex Index Buffer
 	stbi_image_free(img_data);		// Free image stbi_image_free(..)
+}
+
+void Game::collision()
+{
+}
+
+void Game::shootCube()
+{
+	m_cubeFired = true;
+	if (m_cubeFired)
+	{
+		modelPlayer = translate(modelPlayer, glm::vec3(0.0, 0.10, -0.3));
+		m_cubeFired = false;
+	}
+
 }
 

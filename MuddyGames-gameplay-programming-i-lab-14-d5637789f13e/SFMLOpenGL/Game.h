@@ -43,6 +43,9 @@ private:
 	void update();
 	void render();
 	void unload();
+	void collision();
+	void shootCube();
+	bool m_cubeFired = false;
 };
 
 #endif  // ! GAME_H
