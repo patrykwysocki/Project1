@@ -90,30 +90,6 @@ void Game::run()
 				isRunning = false;
 			}
 
-			else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
-			{
-				// Set Model Rotation
-				if (!animate)
-				{
-					animate = true;
-					if (rotation < 0)
-						rotation *= -1; // Set Positive
-					animation = glm::vec3(0, -1, 0); //Rotate Y
-				}
-			}
-
-			else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
-			{
-				// Set Model Rotation
-				if (!animate)
-				{
-					animate = true;
-					if (rotation >= 0)
-						rotation *= -1; // Set Negative
-					animation = glm::vec3(0, 1, 0); //Rotate Y
-				}
-			}
-
 			else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
 			{
 				// Set Model Rotation
@@ -332,22 +308,22 @@ void Game::initialize()
 	modelCenter = mat4(
 		1.0f					// Identity Matrix
 	);
-	modelCenter = translate(modelCenter, glm::vec3(0.0f, 3.0f, -4.0f));
+	modelCenter = translate(modelCenter,npcCenterPos);
 
 	modelLeft = mat4(
 		1.0f					// Identity Matrix
 	);
-	modelLeft = translate(modelLeft, glm::vec3(-7.80f, 3.0f, -4.0f));
+	modelLeft = translate(modelLeft, npcLeftPos);
 
 	modelRight = mat4(
 		1.0f					// Identity Matrix
 	);
-	modelRight = translate(modelRight, glm::vec3(7.80f, 3.0f, -4.0f));
+	modelRight = translate(modelRight, npcRightPos);
 
 	modelPlayer = mat4(
 		1.0f
 	);
-	modelPlayer = translate(modelPlayer, glm::vec3(0.0f, -1.0f, 4.0f));
+	modelPlayer = translate(modelPlayer,playerPos);
 
 
 	// Enable Depth Test
@@ -386,22 +362,13 @@ void Game::update()
 		//m_cubeFired = true;
 		shootCube();
 	}
-	//if (m_cubeFired)
-	//{
-	//	modelPlayer = translate(modelPlayer, glm::vec3(0.0, 0.10, -0.3));
-	//	m_cubeFired = false;
-	//}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::R))
 	{
 		modelPlayer = mat4{
 			1.0 };
-		modelPlayer = translate(modelPlayer, glm::vec3(0.0f, -1.0f, 4.0f));
+		modelPlayer = translate(modelPlayer, playerPos);
 	}
-	
 
-
-	//model = rotate(model, -0.001f, glm::vec3(0, -1, 0)); // Rotate
-	//model = translate(model, glm::vec3( 0.01, 0, 0));
 
 
 	mvpLeft = projection * view * modelLeft;
@@ -412,17 +379,31 @@ void Game::update()
 	modelLeft = rotate(modelLeft, -0.001f, glm::vec3(0, -1, 0)); // Rotate
 	modelCenter = rotate(modelCenter, -0.001f, glm::vec3(0, -1, 0)); // Rotate
 	modelRight = rotate(modelRight, -0.001f, glm::vec3(0, -1, 0)); // Rotate
+	//collision();
+	//glm::vec3 npcLeftPos = glm::vec3(-8.0f, -3.0f, -10.0f);
 
+	//glm::vec3 npcCenterPos = glm::vec3(0.0f, -3.0f, -10.0f);
 
-														   //move the shot forward
-	
+	//glm::vec3 npcRightPos = glm::vec3(8.0f, -3.0f, -10.0f);
 
+	//glm::vec3 playerPos = glm::vec3(0.0f, -3.0f, 0.0f);
 
+	if (playerPos.x <= -7 && playerPos.x >= -9 && playerPos.z <= -9 && playerPos.z >= -11)
+	{
+		std::cout << "collision";
+	}
 
-	DEBUG_MSG(modelLeft[0].x);
-	DEBUG_MSG(modelLeft[0].y);
-	DEBUG_MSG(modelLeft[0].z);
-}
+	if (playerPos.x <= 1 && playerPos.x >= -1 && playerPos.z <= -9 && playerPos.z >= -11)
+	{
+		std::cout << "collision";
+	}
+
+	if (playerPos.x <= 9 && playerPos.x >= 7 && playerPos.z <= -9 && playerPos.z >= -11)
+	{
+		std::cout << "collision";
+	}
+} 
+
 
 void Game::render()
 {
@@ -442,9 +423,9 @@ void Game::render()
 	int y = Mouse::getPosition(window).y;
 
 	string hud = "Lives: ["
-		+ string(toString(x))
+		+ string(toString(m_lives))
 		+ "]  Score: ["
-		+ string(toString(y))
+		+ string(toString(m_score))
 		+ "]";
 
 	Text text(hud, font);
@@ -595,16 +576,22 @@ void Game::unload()
 	stbi_image_free(img_data);		// Free image stbi_image_free(..)
 }
 
-void Game::collision()
-{
-}
+//void Game::collision()
+//{
+////	glm::vec3 npcCenterPos = glm::vec3(0.0f, 3.0f, -4.0f);
+//	if(playerPos.x <= -2 && playerPos.x >= -4 && playerPos.z <= -3 && playerPos.z >= -5)
+//	{
+//		window.close();
+//		std::cout << "collision";
+//	}
+//}
 
 void Game::shootCube()
 {
 	m_cubeFired = true;
 	if (m_cubeFired)
 	{
-		modelPlayer = translate(modelPlayer, glm::vec3(0.0, 0.10, -0.3));
+		modelPlayer = translate(modelPlayer, glm::vec3(0.0, 0.0, -0.2));
 		m_cubeFired = false;
 	}
 
