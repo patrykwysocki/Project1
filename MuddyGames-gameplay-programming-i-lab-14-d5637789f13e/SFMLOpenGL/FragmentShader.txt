@@ -1,0 +1,11 @@
+#version 400\n\r
+
+uniform sampler2D f_texture;
+in vec4 color;
+in vec2 uv;	
+out vec4 fColor;
+	
+void main()
+{
+fColor = color - texture2D(f_texture, uv);
+}

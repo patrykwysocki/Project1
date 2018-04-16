@@ -33,7 +33,7 @@ GLenum	error;		// OpenGL Error Code
 
 
 					//Please see .//Assets//Textures// for more textures
-const string filename = ".//Assets//Textures//cube.pdn";
+const string filename = ".//Assets//Textures//grid_wip.tga";
 
 int width;						// Width of texture
 int height;						// Height of texture
@@ -64,7 +64,22 @@ Game::Game(sf::ContextSettings settings) :
 }
 
 Game::~Game() {}
-
+std::string Game::loadShaderFromFile(const std::string & textFile)
+{
+	ifstream file;
+	file.open(((textFile).c_str()));
+	string output;
+	string line;
+	if (file.is_open())
+	{
+		while (!file.eof())
+		{
+			getline(file, line);
+			output.append(line + "\n");
+		}
+	}
+	return output;
+}
 
 void Game::run()
 {
@@ -350,23 +365,27 @@ void Game::update()
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
 	{
 		modelPlayer = translate(modelPlayer, glm::vec3(-0.005, 0, 0)); // Rotate
+		playerPos.x -= 0.005;
 
 	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
 	{
 		modelPlayer = translate(modelPlayer, glm::vec3(0.005, 0, 0)); // Rotate
-
+		playerPos.x += 0.005;
 	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
 	{
 		//m_cubeFired = true;
 		shootCube();
+		std::cout << playerPos.z << std::endl;
+		
 	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::R))
 	{
 		modelPlayer = mat4{
 			1.0 };
-		modelPlayer = translate(modelPlayer, playerPos);
+		playerPos.z = 0.0f;
+		modelPlayer = translate(modelPlayer, originalPlayerPos);
 	}
 
 
@@ -388,20 +407,39 @@ void Game::update()
 
 	//glm::vec3 playerPos = glm::vec3(0.0f, -3.0f, 0.0f);
 
-	if (playerPos.x <= -7 && playerPos.x >= -9 && playerPos.z <= -9 && playerPos.z >= -11)
+	if (playerPos.z < npcCenterPos.z || playerPos.z < npcLeftPos.z || playerPos.z < npcRightPos.z)
 	{
-		std::cout << "collision";
+		m_cubeFired = false;
+	
+		modelPlayer = translate(modelPlayer, glm::vec3(0.0f, -3.0f, 0.0f));
+		if (playerPos.x <= -7 && playerPos.x >= -9 && playerPos.z <= -9 && playerPos.z >= -11)
+		{
+			m_cubeHit = true;
+			m_score += 10;
+			std::cout << "collision";
+			modelPlayer = translate(modelPlayer, glm::vec3(0.0f, -3.0f, 0.0f));
+		}
+
+		else if (playerPos.x <= 1 && playerPos.x >= -1 && playerPos.z <= -9 && playerPos.z >= -11)
+		{
+			m_cubeHit = true;
+			m_score += 10;
+			std::cout << "collision";
+			modelPlayer = translate(modelPlayer, glm::vec3(0.0f, -3.0f, 0.0f));
+		}
+
+		else if (playerPos.x <= 9 && playerPos.x >= 7 && playerPos.z <= -9 && playerPos.z >= -11)
+		{
+			m_cubeHit = true;
+			m_score += 10;
+			std::cout << "collision";
+			modelPlayer = translate(modelPlayer, glm::vec3(0.0f, -3.0f, 0.0f));
+		}
+			playerPos = glm::vec3(playerPos.x, playerPos.y, 0.0f);
 	}
 
-	if (playerPos.x <= 1 && playerPos.x >= -1 && playerPos.z <= -9 && playerPos.z >= -11)
-	{
-		std::cout << "collision";
-	}
 
-	if (playerPos.x <= 9 && playerPos.x >= 7 && playerPos.z <= -9 && playerPos.z >= -11)
-	{
-		std::cout << "collision";
-	}
+
 } 
 
 
@@ -420,18 +458,21 @@ void Game::render()
 
 	// Find mouse position using sf::Mouse
 	int x = Mouse::getPosition(window).x;
-	int y = Mouse::getPosition(window).y;
-
+	int y = Mouse::getPosition(window).y; 
 	string hud = "Lives: ["
 		+ string(toString(m_lives))
 		+ "]  Score: ["
 		+ string(toString(m_score))
 		+ "]";
+	string gameOverText = "GAMEOVER";
 
 	Text text(hud, font);
-
+	Text gameover(gameOverText, font);
 	text.setFillColor(sf::Color(255, 255, 255, 170));
 	text.setPosition(50.f, 50.f);
+
+	gameover.setFillColor(sf::Color(255, 255, 255, 170));
+	gameover.setPosition(50.f, 50.f);
 
 	window.draw(text);
 
@@ -592,6 +633,7 @@ void Game::shootCube()
 	if (m_cubeFired)
 	{
 		modelPlayer = translate(modelPlayer, glm::vec3(0.0, 0.0, -0.2));
+		playerPos.z += -0.2;
 		m_cubeFired = false;
 	}
 
